@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  app:
+    image: alpine
+    volumes: 
+      - .:/app
+    working_dir: /app
+    container_name: webhook
+    ports:
+      - "8080:8080"
+    depends_on: 
+      - db
+    entrypoint: ./webhook
+    expose: 
+      - '8080'
+  db:
+    image: mysql:5.7
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'webhook'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'axiamed'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'axiamed'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'passw0rd'
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '3306:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+      # Where our data will be persisted
+      
