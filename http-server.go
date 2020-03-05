@@ -164,6 +164,10 @@ func hello (w http.ResponseWriter, req *http.Request){
 			}
 
 			fmt.Println(tag.source)
+			sDec, err1 := b64.StdEncoding.DecodeString(tag.header)
+    		fmt.Println(string(sDec))
+    		fmt.Println(err1)
+			
 		}
 
 
