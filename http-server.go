@@ -25,6 +25,15 @@ type Tag struct {
 	Body		string `json:"body"`
 }
 
+type webhook struct {
+	WebHook	[]RawContent `json:"webhooks"`
+}
+
+type RawContent struct {
+	Headers string `json:"headers"`
+	Bodies	string `json:"body"`
+}
+
 func isDigit(s string) bool {
     for _, c := range s {
         if !unicode.IsDigit(c) {
@@ -154,6 +163,8 @@ func hello (w http.ResponseWriter, req *http.Request){
 			fmt.Println("Select request successfully executed..")
 		}
 		
+		mainJson := webhook{}
+
 		for result.Next() {
 			var tag Tag
 
@@ -164,12 +175,19 @@ func hello (w http.ResponseWriter, req *http.Request){
 			}
 
 			fmt.Println(tag.source)
-			sDec, err1 := b64.StdEncoding.DecodeString(tag.header)
-    		fmt.Println(string(sDec))
+			sHeader, err1 := b64.StdEncoding.DecodeString(tag.header)
+    		fmt.Println(string(sHeader))
     		fmt.Println(err1)
-			
+			sBody, err1 := b64.StdEncoding.DecodeString(tag.Body)
+    		fmt.Println(string(sBody))
+    		fmt.Println(err1)
+
+			raw := RawContent{string(sHeader),string(sBody)}
+			mainJson.WebHook = append(mainJson.WebHook,raw)
 		}
 
+		js, _ := json.MarshalIndent(mainJson,""," ")
+		fmt.Printf("%s\n",js)
 
 	default:
 		fmt.Fprintf(w, "Sorry, only POST and GET methods are supported.")
