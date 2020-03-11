@@ -30,8 +30,8 @@ type webhook struct {
 }
 
 type RawContent struct {
-	Headers string `json:"headers"`
-	Bodies	string `json:"body"`
+	Headers map[string]interface{} `json:"headers"`
+	Bodies	map[string]interface{} `json:"body"`
 }
 
 func isDigit(s string) bool {
@@ -173,21 +173,31 @@ func hello (w http.ResponseWriter, req *http.Request){
 			if err != nil {
 				panic(err.Error()) // proper error handling instead of panic in your app
 			}
-
+			
 			fmt.Println(tag.source)
 			sHeader, err1 := b64.StdEncoding.DecodeString(tag.header)
-    		fmt.Println(string(sHeader))
+    		// fmt.Println(sHeader)
     		fmt.Println(err1)
 			sBody, err1 := b64.StdEncoding.DecodeString(tag.Body)
-    		fmt.Println(string(sBody))
+    		// fmt.Println(string(sBody))
     		fmt.Println(err1)
 
-			raw := RawContent{string(sHeader),string(sBody)}
+
+			var resultH map[string]interface{}
+			json.Unmarshal([]byte(sHeader), &resultH)
+			fmt.Println(resultH)
+
+			var resultB map[string]interface{}
+			json.Unmarshal([]byte(sBody), &resultB)
+			fmt.Println(resultB)
+
+			raw := RawContent{resultH, resultB}
 			mainJson.WebHook = append(mainJson.WebHook,raw)
 		}
 
-		js, _ := json.MarshalIndent(mainJson,""," ")
+		js, _ := json.MarshalIndent(mainJson,"", "    ")
 		fmt.Printf("%s\n",js)
+		fmt.Fprintf(w, "%s\n", js)
 
 	default:
 		fmt.Fprintf(w, "Sorry, only POST and GET methods are supported.")
