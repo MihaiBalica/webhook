@@ -169,11 +169,13 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 			}
 		}
 
+		//the transaction ID requested has valid format so proceeding to looking for it in DB
 		if validID {
 			//let's search db
 			db, err := sql.Open("mysql", "axiamed:axiamed@tcp(db:3306)/")
 			if err != nil {
 				fmt.Println(err.Error())
+				return
 			} else {
 				fmt.Println("Connected to DB successfully")
 			}
@@ -181,6 +183,7 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 			_, err = db.Exec("USE webhook")
 			if err != nil {
 				fmt.Println(err.Error())
+				return
 			} else {
 				fmt.Println("DB selected successfully..")
 			}
@@ -190,6 +193,7 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 			result, err := db.Query("SELECT trId, Datetime, Source, Header, body from calls where trId like '" + trID + "';")
 			if err != nil {
 				fmt.Println(err.Error())
+				return
 			} else {
 				fmt.Println("Select request successfully executed..")
 			}
@@ -208,25 +212,28 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 				fmt.Println(tag.Source)
 				sHeader, err1 := b64.StdEncoding.DecodeString(tag.Header)
 				// fmt.Println(sHeader)
-				fmt.Println(err1)
+				if err != nil {
+					fmt.Println(err1)
+				}
 				sBody, err1 := b64.StdEncoding.DecodeString(tag.Body)
 				// fmt.Println(string(sBody))
-				fmt.Println(err1)
-
+				if err != nil {
+					fmt.Println(err1)
+				}
 				var resultH map[string]interface{}
 				json.Unmarshal([]byte(sHeader), &resultH)
-				fmt.Println(resultH)
+				// fmt.Println(resultH)
 
 				var resultB map[string]interface{}
 				json.Unmarshal([]byte(sBody), &resultB)
-				fmt.Println(resultB)
+				// fmt.Println(resultB)
 
 				raw := RawContent{resultH, resultB}
 				mainJSON.WebHook = append(mainJSON.WebHook, raw)
 			}
 
 			js, _ := json.MarshalIndent(mainJSON, "", "    ")
-			fmt.Printf("%s\n", js)
+			// fmt.Printf("%s\n", js)
 			fmt.Fprintf(w, "%s\n", js)
 		}
 	default:
