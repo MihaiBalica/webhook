@@ -235,6 +235,7 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 			js, _ := json.MarshalIndent(mainJSON, "", "    ")
 			// fmt.Printf("%s\n", js)
 			fmt.Fprintf(w, "%s\n", js)
+			defer db.Close()
 		}
 	default:
 		fmt.Fprintf(w, "Sorry, only POST and GET methods are supported.")
