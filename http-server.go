@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 	"unicode"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -57,6 +58,23 @@ func isDigit(s string) bool {
 	}
 	return true
 }
+
+func getEnv(key string, defaultVal string) string {
+    if value, exists := os.LookupEnv(key); exists {
+	return value
+    }
+
+    return defaultVal
+}
+
+// MySQLUsername - username to connect to mysql db
+var MySQLUsername = getEnv("MYSQL_USER","axiamed")
+// MySQLPassword - le password
+var MySQLPassword = getEnv("MYSQL_PASSWORD","axiamed")
+// MySQLHost - le mysql host - see docker-compose.yml, overthere it is named 'db'
+var MySQLHost = getEnv("MYSQL_HOSTNAME","db")
+// MySQLPort - the mysql db port. 3306 is the default one but you never know.
+var MySQLPort = getEnv("MYSQL_PORT","3306")
 
 func processRequest(w http.ResponseWriter, req *http.Request) {
 
@@ -108,7 +126,7 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 			fmt.Fprintf(w, "POST request body is: %v\n", string(body))
 
 			//let's populate db
-			db, err := sql.Open("mysql", "axiamed:axiamed@tcp(db:3306)/")
+			db, err := sql.Open("mysql", MySQLUsername + ":" + MySQLPassword + "@tcp(" + MySQLHost + ":" + MySQLPort + ")/")
 			if err != nil {
 				fmt.Println(err.Error())
 			} else {
@@ -172,21 +190,21 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 		//the transaction ID requested has valid format so proceeding to looking for it in DB
 		if validID {
 			//let's search db
-			db, err := sql.Open("mysql", "axiamed:axiamed@tcp(db:3306)/")
+			db, err := sql.Open("mysql", MySQLUsername + ":" + MySQLPassword + "@tcp(" + MySQLHost + ":" + MySQLPort + ")/")
 			if err != nil {
 				fmt.Println(err.Error())
 				return
-			} else {
-				fmt.Println("Connected to DB successfully")
 			}
+			fmt.Println("Connected to DB successfully")
+			
 
 			_, err = db.Exec("USE webhook")
 			if err != nil {
 				fmt.Println(err.Error())
 				return
-			} else {
-				fmt.Println("DB selected successfully..")
 			}
+			fmt.Println("DB selected successfully..")
+			
 
 			fmt.Println("SELECT trId, Datetime, Source, Header, body from calls where trId like '" + trID + "';")
 
@@ -194,9 +212,9 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 			if err != nil {
 				fmt.Println(err.Error())
 				return
-			} else {
-				fmt.Println("Select request successfully executed..")
-			}
+			} 
+			fmt.Println("Select request successfully executed..")
+			
 
 			mainJSON := webhook{}
 
@@ -244,13 +262,14 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 }
 
 func initialize(w http.ResponseWriter, req *http.Request) {
+	
 	for name, Headers := range req.Header {
 		for _, h := range Headers {
 			fmt.Fprintf(w, "%v: %v\n", name, h)
 		}
 	}
 
-	db, err := sql.Open("mysql", "axiamed:axiamed@tcp(db:3306)/")
+	db, err := sql.Open("mysql", MySQLUsername + ":" + MySQLPassword + "@tcp(" + MySQLHost + ":" + MySQLPort + ")/")
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
