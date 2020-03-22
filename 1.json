@@ -1,0 +1,24 @@
+{
+    "id": "153695",
+    "type": "card_data",
+    "version": "3.0.0",
+    "1": "1",
+    "data": {
+      "bin": 601195,
+      "card_brand": "DISCOVER",
+      "card_category": "PERSONAL",
+      "card_type": "DEBIT",
+      "is_commercial": false,
+      "is_regulated": false,
+      "issued_entity": "PERSONAL",
+      "issuing_country": "UNITED STATES",
+      "issuing_country_code_a2": "US",
+      "issuing_country_code_a3": "USA",
+      "issuing_country_number": 840,
+      "issuing_org": "DISCOVER BANK",
+      "issuing_phone": "",
+      "issuing_website": "",
+      "pan_length": 16
+    },
+    "hash": "a2d32ab0f09a77a9da9a85d3764e466a8c064f114448fd8169f6e39d3e17c196"
+}

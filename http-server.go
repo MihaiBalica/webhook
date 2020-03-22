@@ -75,25 +75,34 @@ var MySQLPassword = getEnv("MYSQL_PASSWORD","axiamed")
 var MySQLHost = getEnv("MYSQL_HOSTNAME","db")
 // MySQLPort - the mysql db port. 3306 is the default one but you never know.
 var MySQLPort = getEnv("MYSQL_PORT","3306")
+// Verbose - if "true" then return some info
+var Verbose = getEnv("verbose","false")
 
 func processRequest(w http.ResponseWriter, req *http.Request) {
 
+	v := false
+
+	if Verbose == "true" {v = true}
+		
+
 	switch req.Method {
 	case "POST":
+
+		if v { fmt.Fprintf(w, "POST request received!") }
 
 		contentType := req.Header.Get("content-type")
 	
 		if contentType == "application/json;charset=UTF-8" {
 
 			origin := req.Header.Get("x-axia-origin-system")
-			fmt.Fprintf(w, "POST request origin : %v\n", string(origin))
+			if v { fmt.Fprintf(w, "POST request origin : %v\n", string(origin)) }
 			
 			body, err := ioutil.ReadAll(req.Body)
 			if err != nil {
 				panic(err)
 			}
 			if len(string(body)) < 10 {
-				fmt.Fprintf(w, "Empty body!\n")
+				if v { fmt.Fprintf(w, "Empty body!\n") }
 				return
 			}
 			log.Println(string(body))
@@ -103,11 +112,11 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 			if err != nil {
 				panic(err)
 			}
-			fmt.Fprintf(w, "Header to JSON      : %v\n", string(Header))
+			if v { fmt.Fprintf(w, "Header to JSON      : %v\n", string(Header)) }
 
 			// fmt.Fprintf("Header: %v\n",  Headers)
 			for name, value := range req.Header {
-				fmt.Printf("%v: %v\n", name, value)
+				if v { fmt.Printf("%v: %v\n", name, value) }
 			}
 
 
@@ -122,22 +131,22 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 				http.Error(w, err.Error(), 500)
 				return
 			}
-			fmt.Fprintf(w, "Transaction ID is   : %v\n", string(output))
-			fmt.Fprintf(w, "POST request body is: %v\n", string(body))
+			if v { fmt.Fprintf(w, "Transaction ID is   : %v\n", string(output)) }
+			if v { fmt.Fprintf(w, "POST request body is: %v\n", string(body)) }
 
 			//let's populate db
 			db, err := sql.Open("mysql", MySQLUsername + ":" + MySQLPassword + "@tcp(" + MySQLHost + ":" + MySQLPort + ")/")
 			if err != nil {
 				fmt.Println(err.Error())
 			} else {
-				fmt.Println("Connected to DB successfully")
+				if v { fmt.Println("Connected to DB successfully") }
 			}
 
 			_, err = db.Exec("USE webhook")
 			if err != nil {
 				fmt.Println(err.Error())
 			} else {
-				fmt.Println("DB selected successfully..")
+				if v { fmt.Println("DB selected successfully..") }
 			}
 
 			var insertQuery string = "INSERT INTO calls ( trId , Datetime,  Source, Header, body ) values ( " +
@@ -147,7 +156,7 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 				string(b64.StdEncoding.EncodeToString([]byte(Header))) + "\", \"" +
 				string(b64.StdEncoding.EncodeToString([]byte(body))) + "\"  );"
 
-			fmt.Println(insertQuery)
+			if v { fmt.Println(insertQuery) }
 			stmt, err := db.Prepare(insertQuery)
 			if err != nil {
 				fmt.Println(err.Error())
@@ -157,7 +166,7 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 			if err != nil {
 				fmt.Println(err.Error())
 			} else {
-				fmt.Println("Insert request successfully executed..")
+				if v { fmt.Println("Insert request successfully executed..") }
 			}
 
 			defer db.Close()

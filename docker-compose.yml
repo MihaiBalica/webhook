@@ -1,14 +1,22 @@
-version: "3"
+version: "3.7"
 
 services:
+  proxy:
+    image: mynginx:1.0.0
+    depends_on: 
+      - app
+    ports: 
+      - "8080:80"
+    expose: 
+      - '80'
   app:
     image: webhook:1.0.1
     volumes: 
       - .:/go
     working_dir: /go
-    container_name: webhook
-    ports:
-      - "8080:8080"
+    # container_name: webhook
+    # ports:
+    #   - "8080:8080"
     depends_on: 
       - db
     entrypoint: ./webhook
