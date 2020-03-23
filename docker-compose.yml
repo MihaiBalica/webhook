@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   proxy:
-    image: mynginx:1.0.0
+    image: mihaibalica/mynginx:1.0.0
     depends_on: 
       - app
     ports: 
@@ -10,7 +10,7 @@ services:
     expose: 
       - '80'
   app:
-    image: webhook:1.0.1
+    image: mihaibalica/webhook:1.0.1
     volumes: 
       - .:/go
     working_dir: /go
@@ -19,7 +19,7 @@ services:
     #   - "8080:8080"
     depends_on: 
       - db
-    entrypoint: ./webhook
+    entrypoint: /go/webhook
     expose: 
       - '8080'
   db:
