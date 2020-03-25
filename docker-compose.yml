@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   proxy:
-    image: mihaibalica/mynginx:1.0.0
+    image: mihaibalica/mynginx:1.0.1
     depends_on: 
       - app
     ports: 
@@ -11,6 +11,8 @@ services:
       - '80'
   app:
     image: mihaibalica/webhook:1.0.1
+    environment:
+      verbose: 'true'
     volumes: 
       - webhook:/go
     working_dir: /go
