@@ -10,18 +10,18 @@ services:
     expose: 
       - '80'
   app:
-    image: mihaibalica/webhook:1.0.1
+    image: webhook:1.0.4
     environment:
       verbose: 'true'
-    volumes: 
-      - webhook:/go
+    # volumes: 
+    #   - webhook:/go
     working_dir: /go
     # container_name: webhook
     # ports:
     #   - "8080:8080"
     depends_on: 
       - db
-    entrypoint: /go/webhook
+    entrypoint: /go/webhook 2>/go/error.log
     expose: 
       - '8080'
   db:
@@ -47,5 +47,5 @@ services:
       - db_data:/var/lib/mysql
 volumes:
     db_data: {}
-    webhook: {}
+    # webhook: {}
       

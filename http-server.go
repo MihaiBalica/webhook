@@ -84,25 +84,26 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 
 	if Verbose == "true" {v = true}
 		
-
-	switch req.Method {
+	method := strings.ToUpper(req.Method)
+	fmt.Println ("Received method: ", method)
+	switch method {
 	case "POST":
 
-		if v { fmt.Fprintf(w, "POST request received!") }
+		if v { fmt.Println(w, "POST request received!") }
 
 		contentType := req.Header.Get("content-type")
-	
-		if contentType == "application/json;charset=UTF-8" {
+		fmt.Println( "Content type: ",string(contentType))
+		if strings.Contains(contentType, "application/json") {
 
 			origin := req.Header.Get("x-axia-origin-system")
-			if v { fmt.Fprintf(w, "POST request origin : %v\n", string(origin)) }
+			if v { fmt.Println(w, "POST request origin : %v\n", string(origin)) }
 			
 			body, err := ioutil.ReadAll(req.Body)
 			if err != nil {
 				panic(err)
 			}
 			if len(string(body)) < 10 {
-				if v { fmt.Fprintf(w, "Empty body!\n") }
+				if v { fmt.Println("Empty body!") }
 				return
 			}
 			log.Println(string(body))
@@ -112,7 +113,7 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 			if err != nil {
 				panic(err)
 			}
-			if v { fmt.Fprintf(w, "Header to JSON      : %v\n", string(Header)) }
+			if v { fmt.Println("Header to JSON      : ", string(Header)) }
 
 			// fmt.Fprintf("Header: %v\n",  Headers)
 			for name, value := range req.Header {
@@ -131,8 +132,8 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 				http.Error(w, err.Error(), 500)
 				return
 			}
-			if v { fmt.Fprintf(w, "Transaction ID is   : %v\n", string(output)) }
-			if v { fmt.Fprintf(w, "POST request body is: %v\n", string(body)) }
+			if v { fmt.Println( "Transaction ID is   : ", string(output)) }
+			if v { fmt.Println( "POST request body is: ", string(body)) }
 
 			//let's populate db
 			db, err := sql.Open("mysql", MySQLUsername + ":" + MySQLPassword + "@tcp(" + MySQLHost + ":" + MySQLPort + ")/")
