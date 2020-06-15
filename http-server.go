@@ -216,9 +216,9 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 			fmt.Println("DB selected successfully..")
 			
 
-			fmt.Println("SELECT trId, Datetime, Source, Header, body from calls where trId like '" + trID + "';")
+			fmt.Println("SELECT trId, Datetime, Source, Header, body from calls where trId is '" + trID + "';")
 
-			result, err := db.Query("SELECT trId, Datetime, Source, Header, body from calls where trId like '" + trID + "';")
+			result, err := db.Query("SELECT trId, Datetime, Source, Header, body from calls where trId is '" + trID + "';")
 			if err != nil {
 				fmt.Println(err.Error())
 				return
