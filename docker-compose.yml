@@ -10,7 +10,7 @@ services:
     expose: 
       - '80'
   app:
-    image: mihaibalica/webhook:1.0.7
+    image: mihaibalica/webhook:1.0.8
     environment:
       verbose: 'true'
       MYSQL_DATABASE: 'webhook'

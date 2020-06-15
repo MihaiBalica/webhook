@@ -21,7 +21,7 @@ TransactionID is used to extract the transaction id from JSON
 ID contains that transaction id
 */
 type TransactionID struct {
-	ID string `json:"id"`
+	ID json.Number `json:"id"`
 }
 
 /*
