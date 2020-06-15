@@ -124,6 +124,7 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 			var msg TransactionID
 			err = json.Unmarshal(body, &msg)
 			if err != nil {
+				if v {fmt.Printf("Cannot unmarshal ID JSON")}
 				http.Error(w, err.Error(), 500)
 				return
 			}
@@ -132,6 +133,7 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 
 			output, err := json.Marshal(msg.ID)
 			if err != nil {
+				if v {fmt.Printf("Cannot unmarshal ID from ID JSON")}
 				http.Error(w, err.Error(), 500)
 				return
 			}
