@@ -127,6 +127,9 @@ func processRequest(w http.ResponseWriter, req *http.Request) {
 				http.Error(w, err.Error(), 500)
 				return
 			}
+
+			if v { fmt.Println( "The Id is: ", string(msg.ID)) }
+
 			output, err := json.Marshal(msg.ID)
 			if err != nil {
 				http.Error(w, err.Error(), 500)
