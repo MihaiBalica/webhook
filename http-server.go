@@ -68,9 +68,9 @@ func getEnv(key string, defaultVal string) string {
 }
 
 // MySQLUsername - username to connect to mysql db
-var MySQLUsername = getEnv("MYSQL_USER","axiamed")
+var MySQLUsername = getEnv("MYSQL_USER","webhook")
 // MySQLPassword - le password
-var MySQLPassword = getEnv("MYSQL_PASSWORD","axiamed")
+var MySQLPassword = getEnv("MYSQL_PASSWORD","webh00k")
 // MySQLHost - le mysql host - see docker-compose.yml, overthere it is named 'db'
 var MySQLHost = getEnv("MYSQL_HOSTNAME","db")
 // MySQLPort - the mysql db port. 3306 is the default one but you never know.
@@ -315,7 +315,7 @@ func initialize(w http.ResponseWriter, req *http.Request) {
 
 func main() {
 	http.HandleFunc("/", processRequest)
-	http.HandleFunc("/initializeAxia", initialize)
+	http.HandleFunc("/initializeDataBase", initialize)
 
 	fmt.Printf("Starting server for testing HTTP POST...\n")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
